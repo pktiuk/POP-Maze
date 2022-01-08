@@ -1,9 +1,22 @@
-import random
+import enum, time, math, random, sys
+from os import environ
 
 from anytree import AnyNode
 
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+import pygame
+
+import __future__
+
 # Randomized Kruskal's algorithm implementation
-# https://en.wikipedia.org/wiki/Kruskal's_algorithm
+
+
+class TileType(enum.IntEnum):
+    EMPTY = 0
+    WALL = 1
+    CHECKED = 2
+    CURRENT = 3
+    FINAL_PATH = 4
 
 
 class Maze:
@@ -12,6 +25,11 @@ class Maze:
             height / 2
         )  # size of walkable tiles is two times smaller, because of edge spacing
         self.w = int(width / 2)
+        if visualisation:
+            #TODO make real time visualization
+            self.visual = MazeVisualizer(height + 1, width + 1)
+        else:
+            self.visual = None
 
         self.nodes = self.__create_nodes(
         )  # generate tree nodes for every walkable tile
@@ -22,14 +40,15 @@ class Maze:
             self.data = []
 
     def __str__(self):
-        #TODO fix orientation
         result = ""
         for line in self.data:
             for pixel in line:
-                if pixel:
+                if pixel == TileType.WALL:
                     result += "X"
-                else:
+                elif pixel == TileType.EMPTY:
                     result += " "
+                else:
+                    result += "."
             result += "\n"
         return result
 
@@ -55,6 +74,8 @@ class Maze:
         # random.shuffle(edges) # randomized list of edges
         return edges
 
+    #TODO add [] operator for maze
+
     # maze generation
     def generate(self):
         self.data = [[0] * (2 * self.w + 1) for x in range(2 * self.h + 1)
@@ -79,7 +100,8 @@ class Maze:
             if node_1.id == node_2.id:  # check if nodes are in same tree
                 x, y = self.__getCords(id_1, id_2)
                 self.data[y + 1][
-                    x + 1] = 1  # nodes are connected, so we save this edge
+                    x +
+                    1] = TileType.WALL  # nodes are connected, so we save this edge
             else:  # nodes are not connected, because we assigned 0 values before we do not change any maze value
                 temp = list(node_1.children)  # save first node children
                 temp.append(node_2)  # add second node as first node's child
@@ -90,7 +112,7 @@ class Maze:
             for j in range(2 * self.w + 1):
                 if i == 0 or i == 2 * self.h or j == 0 or j == 2 * self.w or (
                         i % 2 == 0 and j % 2 == 0):
-                    self.data[i][j] = 1
+                    self.data[i][j] = TileType.WALL
 
     # finding cordinates of edge between two nodes in maze array
     def __getCords(self, id_1, id_2):
@@ -102,7 +124,79 @@ class Maze:
             y = int(id_1 / self.w) * 2 + 1
         return x, y
 
+    def show(self):
+        if self.visual is not None:
+            self.visual.show(self.data)
+        else:
+            self.visual = MazeVisualizer(2 * self.h + 1, 2 * self.w + 1)
+            self.visual.show(self.data)
+
     def clean_nodes(self):
         for i in range(self.h):
             for j in range(self.w):
                 self.nodes[i * self.w + j].parent = None
+
+
+class MazeVisualizer:
+    LIGHT_GRAY = (224, 224, 224)
+    BLACK = (0, 0, 0)
+    RED = (255, 0, 0)
+    GREEN = (0, 255, 0)
+    BLUE = (0, 0, 255)
+
+    WIDTH = 800
+    HEIGHT = 800
+
+    def __init__(self, n, m, title="maze"):
+        self.n = self.HEIGHT / n
+        self.m = self.WIDTH / m
+        if self.m < self.n:
+            self.n = self.m
+        self.padding = (self.HEIGHT - self.n * n) / 2
+        self.display = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        self.display.fill(self.LIGHT_GRAY)
+        pygame.display.set_caption(title)
+
+    def draw_cell(self, x, y, color=None, delay=0, update=True):
+        x = x * self.m
+        y = self.padding + (y * self.n)
+        w = self.m
+        h = self.n
+        if not w.is_integer():
+            w = math.ceil(w)
+        if not h.is_integer():
+            h = math.ceil(h)
+        if color is None:
+            color = self.LIGHT_GRAY
+        pygame.draw.rect(self.display, color, pygame.Rect(x, y, w, h))
+        if update:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            pygame.display.update()
+        if delay != 0:
+            time.sleep(delay)
+
+    def show(self, data):
+        self.display.fill(self.LIGHT_GRAY)
+        for i in range(len(data)):
+            for j in range(len(data[i])):
+                if data[i][j] == TileType.WALL:
+                    self.draw_cell(j, i, self.BLACK, 0, False)
+                elif data[i][j] == TileType.CHECKED:
+                    self.draw_cell(j, i, self.GREEN, 0, False)
+                elif data[i][j] == TileType.CURRENT:
+                    self.draw_cell(j, i, self.RED, 0, False)
+                elif data[i][j] == TileType.FINAL_PATH:
+                    self.draw_cell(j, i, self.BLUE, 0, False)
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            pygame.display.update()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE]:
+                break
