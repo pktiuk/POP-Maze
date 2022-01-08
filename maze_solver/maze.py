@@ -20,13 +20,12 @@ class TileType(enum.IntEnum):
 
 
 class Maze:
-    def __init__(self, height, width, visualisation=False, init=True):
+    def __init__(self, width, height, visualisation=False, init=True):
         self.h = int(
             height / 2
         )  # size of walkable tiles is two times smaller, because of edge spacing
         self.w = int(width / 2)
         if visualisation:
-            #TODO make real time visualization
             self.visual = MazeVisualizer(height + 1, width + 1)
         else:
             self.visual = None
@@ -37,15 +36,15 @@ class Maze:
         if init:
             self.generate()  # generate maze data
         else:
-            self.data = []
+            self._fill_zeroes()
 
     def __str__(self):
         result = ""
-        for line in self.data:
-            for pixel in line:
-                if pixel == TileType.WALL:
+        for y in range(len(self.data)):
+            for x in range(len(self.data[0])):
+                if self.data[y][x] == TileType.WALL:
                     result += "X"
-                elif pixel == TileType.EMPTY:
+                elif self.data[y][x] == TileType.EMPTY:
                     result += " "
                 else:
                     result += "."
@@ -78,8 +77,7 @@ class Maze:
 
     # maze generation
     def generate(self):
-        self.data = [[0] * (2 * self.w + 1) for x in range(2 * self.h + 1)
-                     ]  # generate maze array with zeros
+        self.clean()
 
         edges_temp = self.edges.copy(
         )  # copy edge list - edges are popped from list so we have to copy it to have it saved
@@ -99,7 +97,7 @@ class Maze:
                 node_2 = node_2.ancestors[0]  # root of second node
             if node_1.id == node_2.id:  # check if nodes are in same tree
                 x, y = self.__get_cords(id_1, id_2)
-                self.set_wall(y + 1, x +
+                self.set_wall(x + 1, y +
                               1)  # nodes are connected, so we save this edge
             else:  # nodes are not connected, because we assigned 0 values before we do not change any maze value
                 temp = list(node_1.children)  # save first node children
@@ -111,12 +109,21 @@ class Maze:
             for j in range(2 * self.w + 1):
                 if i == 0 or i == 2 * self.h or j == 0 or j == 2 * self.w or (
                         i % 2 == 0 and j % 2 == 0):
-                    self.set_wall(i, j)
+                    self.set_wall(j, i)
+
+    def _fill_zeroes(self):
+        self.data = [[0] * (2 * self.w + 1) for x in range(2 * self.h + 1)
+                     ]  # generate maze array with zeros
 
     def set_wall(self, x, y):
-        self.data[x][y] = TileType.WALL
+        self.data[y][x] = TileType.WALL
         if self.visual is not None:
             self.visual.draw_cell(x, y, self.visual.BLACK)
+
+    def set_empty(self, x, y):
+        self.data[y][x] = TileType.EMPTY
+        if self.visual is not None:
+            self.visual.draw_cell(x, y, self.visual.WHITE)
 
     # finding cordinates of edge between two nodes in maze array
     def __get_cords(self, id_1, id_2):
@@ -136,6 +143,7 @@ class Maze:
             self.visual.show(self.data)
 
     def clean(self):
+        self._fill_zeroes()
         for i in range(self.h):
             for j in range(self.w):
                 self.nodes[i * self.w + j].parent = None

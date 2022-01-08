@@ -17,10 +17,8 @@ def parse_args():
 
 def main():
     args = parse_args()
-    m = Maze(args.width, args.height)
+    m = Maze(args.width, args.height, True)
     print(m)
-    if args.visualize:
-        m.show()
     print("Press Enter to exit")
     input()
 
