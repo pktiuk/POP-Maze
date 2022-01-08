@@ -99,9 +99,8 @@ class Maze:
                 node_2 = node_2.ancestors[0]  # root of second node
             if node_1.id == node_2.id:  # check if nodes are in same tree
                 x, y = self.__get_cords(id_1, id_2)
-                self.data[y + 1][
-                    x +
-                    1] = TileType.WALL  # nodes are connected, so we save this edge
+                self.set_wall(y + 1, x +
+                              1)  # nodes are connected, so we save this edge
             else:  # nodes are not connected, because we assigned 0 values before we do not change any maze value
                 temp = list(node_1.children)  # save first node children
                 temp.append(node_2)  # add second node as first node's child
@@ -112,7 +111,12 @@ class Maze:
             for j in range(2 * self.w + 1):
                 if i == 0 or i == 2 * self.h or j == 0 or j == 2 * self.w or (
                         i % 2 == 0 and j % 2 == 0):
-                    self.data[i][j] = TileType.WALL
+                    self.set_wall(i, j)
+
+    def set_wall(self, x, y):
+        self.data[x][y] = TileType.WALL
+        if self.visual is not None:
+            self.visual.draw_cell(x, y, self.visual.BLACK)
 
     # finding cordinates of edge between two nodes in maze array
     def __get_cords(self, id_1, id_2):
