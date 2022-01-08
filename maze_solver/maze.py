@@ -115,15 +115,16 @@ class Maze:
         self.data = [[0] * (2 * self.w + 1) for x in range(2 * self.h + 1)
                      ]  # generate maze array with zeros
 
-    def set_wall(self, x, y):
-        self.data[y][x] = TileType.WALL
+    def set_tile(self, x, y, type: TileType):
+        self.data[y][x] = type
         if self.visual is not None:
-            self.visual.draw_cell(x, y, self.visual.BLACK)
+            self.visual.draw_cell(x, y, self.visual.TILE_COLORS.get(type))
+
+    def set_wall(self, x, y):
+        self.set_tile(x, y, TileType.WALL)
 
     def set_empty(self, x, y):
-        self.data[y][x] = TileType.EMPTY
-        if self.visual is not None:
-            self.visual.draw_cell(x, y, self.visual.WHITE)
+        self.set_tile(x, y, TileType.EMPTY)
 
     # finding cordinates of edge between two nodes in maze array
     def __get_cords(self, id_1, id_2):
@@ -158,6 +159,13 @@ class MazeVisualizer:
 
     WIDTH = 800
     HEIGHT = 800
+
+    TILE_COLORS = {
+        TileType.WALL: BLACK,
+        TileType.CHECKED: GREEN,
+        TileType.CURRENT: RED,
+        TileType.FINAL_PATH: BLUE,
+    }
 
     def __init__(self, n, m, title="maze"):
         self.n = self.HEIGHT / n
@@ -194,15 +202,8 @@ class MazeVisualizer:
         self.display.fill(self.LIGHT_GRAY)
         for i in range(len(data)):
             for j in range(len(data[i])):
-                if data[i][j] == TileType.WALL:
-                    self.draw_cell(j, i, self.BLACK, 0, False)
-                elif data[i][j] == TileType.CHECKED:
-                    self.draw_cell(j, i, self.GREEN, 0, False)
-                elif data[i][j] == TileType.CURRENT:
-                    self.draw_cell(j, i, self.RED, 0, False)
-                elif data[i][j] == TileType.FINAL_PATH:
-                    self.draw_cell(j, i, self.BLUE, 0, False)
-
+                self.draw_cell(j, i, self.TILE_COLORS.get(data[i][j]), 0,
+                               False)
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
