@@ -98,7 +98,7 @@ class Maze:
             if not node_2.is_root:
                 node_2 = node_2.ancestors[0]  # root of second node
             if node_1.id == node_2.id:  # check if nodes are in same tree
-                x, y = self.__getCords(id_1, id_2)
+                x, y = self.__get_cords(id_1, id_2)
                 self.data[y + 1][
                     x +
                     1] = TileType.WALL  # nodes are connected, so we save this edge
@@ -115,7 +115,7 @@ class Maze:
                     self.data[i][j] = TileType.WALL
 
     # finding cordinates of edge between two nodes in maze array
-    def __getCords(self, id_1, id_2):
+    def __get_cords(self, id_1, id_2):
         if id_2 - id_1 == 1:  # vertical edge
             x = (id_1 % self.w) * 2 + 1
             y = int(id_1 / self.w) * 2
@@ -131,7 +131,7 @@ class Maze:
             self.visual = MazeVisualizer(2 * self.h + 1, 2 * self.w + 1)
             self.visual.show(self.data)
 
-    def clean_nodes(self):
+    def clean(self):
         for i in range(self.h):
             for j in range(self.w):
                 self.nodes[i * self.w + j].parent = None
