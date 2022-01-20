@@ -38,6 +38,8 @@ class Maze:
         else:
             self._fill_zeroes()
 
+        self.current_tile = None
+
     def __str__(self):
         result = ""
         for y in range(len(self.data)):
@@ -115,19 +117,29 @@ class Maze:
         self.data = [[0] * (2 * self.w + 1) for x in range(2 * self.h + 1)
                      ]  # generate maze array with zeros
 
-    def set_tile(self, x, y, type: TileType):
+    def _set_tile(self, x, y, type: TileType):
         self.data[y][x] = type
         if self.visual is not None:
             self.visual.draw_cell(x, y, self.visual.TILE_COLORS.get(type))
 
-    def get_tile(self, x, y):
+    def get_tile(self, x, y) -> TileType:
         return self.data[y][x]
 
     def set_wall(self, x, y):
-        self.set_tile(x, y, TileType.WALL)
+        self._set_tile(x, y, TileType.WALL)
 
     def set_empty(self, x, y):
-        self.set_tile(x, y, TileType.EMPTY)
+        self._set_tile(x, y, TileType.EMPTY)
+
+    def set_checked(self, x, y):
+        self._set_tile(x, y, TileType.CHECKED)
+
+    def set_current(self, x, y):
+        if self.current_tile is not None:
+            prev_x, prev_y = self.current_tile
+            self.set_checked(prev_x, prev_y)
+        self._set_tile(x, y, TileType.CURRENT)
+        self.current_tile = (x, y)
 
     # finding cordinates of edge between two nodes in maze array
     def __get_cords(self, id_1, id_2):
