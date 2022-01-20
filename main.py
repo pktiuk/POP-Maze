@@ -2,6 +2,7 @@
 from argparse import ArgumentParser
 
 from maze_solver.maze import Maze
+from maze_solver.solver import Solver
 
 
 def parse_args():
@@ -18,6 +19,9 @@ def parse_args():
 def main():
     args = parse_args()
     m = Maze(args.width, args.height, args.visualize)
+    start = (1, len(m.data) - 2)
+    end = (len(m.data[0]) - 2, 1)
+    solver = Solver(m, start, end)
     print(m)
     print("Press Enter to exit")
     input()

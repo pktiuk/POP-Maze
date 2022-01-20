@@ -48,8 +48,12 @@ class Maze:
                     result += "X"
                 elif self.data[y][x] == TileType.EMPTY:
                     result += " "
-                else:
+                elif self.data[y][x] == TileType.CHECKED:
                     result += "."
+                elif self.data[y][x] == TileType.FINAL_PATH:
+                    result += "+"
+                else:
+                    result += "?"
             result += "\n"
         return result
 
