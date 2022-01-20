@@ -120,7 +120,8 @@ class Maze:
     def _set_tile(self, x, y, type: TileType):
         self.data[y][x] = type
         if self.visual is not None:
-            self.visual.draw_cell(x, y, self.visual.TILE_COLORS.get(type))
+            self.visual.draw_cell(x, y, self.visual.TILE_COLORS.get(type),
+                                  0.01)
 
     def get_tile(self, x, y) -> TileType:
         return self.data[y][x]
