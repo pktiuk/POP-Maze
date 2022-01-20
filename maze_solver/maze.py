@@ -134,6 +134,9 @@ class Maze:
     def set_checked(self, x, y):
         self._set_tile(x, y, TileType.CHECKED)
 
+    def set_path(self, x, y):
+        self._set_tile(x, y, TileType.FINAL_PATH)
+
     def set_current(self, x, y):
         if self.current_tile is not None:
             prev_x, prev_y = self.current_tile

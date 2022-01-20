@@ -8,7 +8,7 @@ from .maze import Maze, TileType
 
 class Solver:
     def __init__(self, maze: Maze, start, end, init=True, heuristic_type=0):
-        self.mazeobj = maze
+        self.maze = maze
         self.maze_data = maze.data  # data with walkable tiles and walls maze[n][m] <-> maze[y][x]
         self.h = len(self.maze_data)  # height of maze
         self.w = len(self.maze_data[0])  # width of maze
@@ -35,12 +35,12 @@ class Solver:
             del open_n[self.__get_id(
                 current_n, open_n)]  # delete current tile from waiting list
             closed_n.append(current_n)  # add current tile to already checked
-            self.mazeobj.set_checked(current_n.x, current_n.y)
+            self.maze.set_checked(current_n.x, current_n.y)
 
             if (current_n.x == self.end[0] and current_n.y
                     == self.end[1]):  # check if we reached end of path
                 self.path = current_n
-                #TODO Draw path
+                self.__update_maze_path(current_n)
                 break
 
             neighbours = self.__find_neighbours(
@@ -58,7 +58,7 @@ class Solver:
                     if index is None:  # tile is not in open list
                         open_n.append(n)  # add to open list
                         index = -1  # set index for this tile
-                        self.mazeobj.set_current(current_n.x, current_n.y)
+                        self.maze.set_current(current_n.x, current_n.y)
                     open_n[
                         index].parent = current_n  # make current parent of this neighbour
                     open_n[index].f_c = n.f_c  # update cost function
@@ -139,6 +139,13 @@ class Solver:
             if n.x == node.x and n.y == node.y:
                 return i
         return None
+
+    def __update_maze_path(self, node):
+        self.maze.set_path(node.x, node.y)
+        while (not node.is_root):
+            self.maze.set_path(node.x, node.y)
+            node = node.parent
+        self.maze.set_path(node.x, node.y)  # root value
 
     def clean(self):
         for i, _ in enumerate(self.maze_data):
