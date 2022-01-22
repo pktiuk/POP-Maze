@@ -178,6 +178,15 @@ class Maze:
                 if self.data[y][x] != TileType.WALL:
                     self.data[y][x] = TileType.EMPTY
 
+    def get_tiles_number(self, tile_type: TileType = TileType.CHECKED):
+        result = 0
+        for y in range(self.h):
+            for x in range(self.w):
+                self.nodes[x * self.w + y].parent = None
+                if self.data[y][x] == tile_type:
+                    result += 1
+        return result
+
 
 class MazeVisualizer:
     LIGHT_GRAY = (224, 224, 224)
