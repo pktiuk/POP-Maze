@@ -79,11 +79,9 @@ class Maze:
         # random.shuffle(edges) # randomized list of edges
         return edges
 
-    #TODO add [] operator for maze
-
     # maze generation
     def generate(self):
-        self.clean()
+        self.__zero()
 
         edges_temp = self.edges.copy(
         )  # copy edge list - edges are popped from list so we have to copy it to have it saved
@@ -166,11 +164,19 @@ class Maze:
             self.visual = MazeVisualizer(2 * self.h + 1, 2 * self.w + 1)
             self.visual.show(self.data)
 
-    def clean(self):
+    def __zero(self):
         self._fill_zeroes()
         for i in range(self.h):
             for j in range(self.w):
                 self.nodes[i * self.w + j].parent = None
+
+    # restarts labirynth state (useful for trying different solvers)
+    def restart(self):
+        for y in range(self.h):
+            for x in range(self.w):
+                self.nodes[x * self.w + y].parent = None
+                if self.data[y][x] != TileType.WALL:
+                    self.data[y][x] = TileType.EMPTY
 
 
 class MazeVisualizer:
