@@ -27,23 +27,18 @@ def test_h(n, m, iterations, heuristic=0):
         csvwriter.writerow(
             ['iteration', 'time [ms]', 'path length', 'visited tiles [%]'])
 
-        maze = Maze(n, m)
-        path = Solver(maze, (1, len(maze.data) - 2),
-                      (len(maze.data[0]) - 2, 1),
-                      init=False,
-                      heuristic_type=heuristic)
-
         for i in tqdm(range(iterations)):
-            maze.restart()
-            maze.generate()
+            maze = Maze(n, m)
+            path = Solver(maze, (1, len(maze.data) - 2),
+                          (len(maze.data[0]) - 2, 1),
+                          init=False,
+                          heuristic_type=heuristic)
 
             path.maze = maze
             path.path = None
-            for j in range(4):
-                path.h_type = j
-                start = timer()
-                path.search()
-                end = timer()
+            start = timer()
+            path.search()
+            end = timer()
 
             empty_tiles = path.maze.get_tiles_count(TileType.EMPTY)
             checked_tiles = path.maze.get_tiles_count(TileType.CHECKED)

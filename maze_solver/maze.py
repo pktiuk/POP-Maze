@@ -1,5 +1,6 @@
 import enum, time, math, random, sys
 from os import environ
+from collections import Counter
 
 from anytree import AnyNode
 
@@ -179,13 +180,8 @@ class Maze:
                     self.data[y][x] = TileType.EMPTY
 
     def get_tiles_count(self, tile_type: TileType = TileType.CHECKED):
-        result = 0
-        for y in range(self.h):
-            for x in range(self.w):
-                self.nodes[x * self.w + y].parent = None
-                if self.data[y][x] == tile_type:
-                    result += 1
-        return result
+        l = [cell for row in self.data for cell in row]
+        return Counter(l)[tile_type]
 
 
 class MazeVisualizer:
