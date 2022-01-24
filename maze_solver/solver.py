@@ -155,6 +155,6 @@ class Solver:
         self.maze_data[self.start[1]][self.start[0]] = 0
         self.maze_data[self.end[1]][self.end[0]] = 0
 
-    def calculate_data(self):
+    def calculate_data(self) -> Counter:
         temp = [cell for row in self.maze_data for cell in row]
         return Counter(temp)

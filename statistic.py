@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import math, random, csv, os, sys
 from timeit import default_timer as timer
 from tqdm import tqdm
-from maze_solver.maze import Maze
+from maze_solver.maze import Maze, TileType
 from maze_solver.solver import Solver
 
 
@@ -45,14 +45,16 @@ def test_h(n, m, iterations, heuristic=0):
                 path.search()
                 end = timer()
 
-            data = path.calculate_data()
+            empty_tiles = path.maze.get_tiles_count(TileType.EMPTY)
+            checked_tiles = path.maze.get_tiles_count(TileType.CHECKED)
+            path_tiles = path.maze.get_tiles_count(TileType.FINAL_PATH)
 
             csvwriter.writerow([
                 i + 1,
-                round((end - start) * 1000, 2), data[4],
+                round((end - start) * 1000, 2), path_tiles,
                 round(
-                    100 * (data[2] + data[3] + data[4]) /
-                    (data[0] + data[2] + data[3] + data[4]), 2)
+                    100 * (checked_tiles + path_tiles) /
+                    (empty_tiles + checked_tiles + path_tiles), 2)
             ])
 
             print(chr(27) + "[2J")
@@ -122,8 +124,7 @@ def analysis_received_data(n, m, iterations=10):
 
 if __name__ == "__main__":
     random.seed(578)
-    if len(sys.argv) > 3:
-        analysis_received_data(int(sys.argv[1]), int(sys.argv[2]),
-                               int(sys.argv[3]))
+    if len(sys.argv) != 0:
+        analysis_received_data(10, 10)
     elif len(sys.argv) == 3:
         analysis_received_data(int(sys.argv[1]), int(sys.argv[2]))
