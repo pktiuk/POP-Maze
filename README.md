@@ -13,3 +13,28 @@ Instalacja zależności
 ```bash
 pip3 install -r requirements.txt
 ```
+
+Uruchomienie programu
+
+```bash
+python3 ./main.py
+```
+
+Argumenty
+
+```bash
+./main.py -h
+usage: main.py [-h] [-v] [-e {ABS,SQRT,MAX,NONE}] [width] [height]
+
+Labitynth solver
+
+positional arguments:
+  width
+  height
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --visualize
+  -e {ABS,SQRT,MAX,NONE}, --heuristic {ABS,SQRT,MAX,NONE}
+                        Heuristic function used with A*
+```
