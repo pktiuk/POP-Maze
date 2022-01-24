@@ -124,7 +124,10 @@ def analysis_received_data(n, m, iterations=10):
 
 if __name__ == "__main__":
     random.seed(578)
-    if len(sys.argv) != 0:
-        analysis_received_data(10, 10)
+    if len(sys.argv) > 3:
+        analysis_received_data(int(sys.argv[1]), int(sys.argv[2]),
+                               int(sys.argv[3]))
     elif len(sys.argv) == 3:
         analysis_received_data(int(sys.argv[1]), int(sys.argv[2]))
+    else:
+        analysis_received_data(20, 20)
