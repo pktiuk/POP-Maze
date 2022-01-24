@@ -178,7 +178,7 @@ class Maze:
                 if self.data[y][x] != TileType.WALL:
                     self.data[y][x] = TileType.EMPTY
 
-    def get_tiles_number(self, tile_type: TileType = TileType.CHECKED):
+    def get_tiles_count(self, tile_type: TileType = TileType.CHECKED):
         result = 0
         for y in range(self.h):
             for x in range(self.w):

@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from maze_solver.maze import Maze
 from maze_solver.solver import Solver
 
-HEURISTIC_VALUES = {"ABS": 0, "SQRT": 1, "MAX": 2}
+HEURISTIC_VALUES = {"ABS": 0, "SQRT": 1, "MAX": 2, "NONE": 3}
 
 
 def parse_args():
@@ -20,7 +20,7 @@ def parse_args():
                         help="Heuristic function used with A*",
                         type=str,
                         default="ABS",
-                        choices=["ABS", "SQRT", "MAX"])
+                        choices=["ABS", "SQRT", "MAX", "NONE"])
     return parser.parse_args()
 
 
